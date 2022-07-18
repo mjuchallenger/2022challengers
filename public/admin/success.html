@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>전체성공률</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <link rel="stylesheet" href="/public/frontEnd/components/css/navbar.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
+    <script src="https://kit.fontawesome.com/a4d2993e00.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <nav class="navbar sticky-top navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="/public/frontEnd/img/logo1.png" alt="" width="30" height="30" class="d-inline-block align-text-top">
+                챌린저스
+              </a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/public/frontEnd/components/home.html">메인 홈</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/public/frontEnd/components/mypage.html">프로필</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="/public/admin/success.html">전체챌린지 성공률</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+    <ul class="list-group">
+        <!-- <li class="list-group-item" id="challengeItem"></li> -->
+
+    </ul>
+
+
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">숫자</th>
+                <th scope="col">이름</th>
+                <th scope="col">전공</th>
+                <th scope="col">챌린지성공율</th>
+
+            </tr>
+        </thead>
+        <tbody>
+            <!-- <th scope="row">1</th>
+                <td>Mark</td>
+                <td>Otto</td>
+                <td>@mdo</td>
+            </tr> -->
+        </tbody>
+    </table>
+
+
+
+    <!-- update the version number as needed -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+    <script>
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxtq2PPSDXc49_PB-wyXcaLI6SZy6qrVA",
+            authDomain: "mjuchallengers-cdcf0.firebaseapp.com",
+            databaseURL: "https://mjuchallengers-cdcf0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mjuchallengers-cdcf0",
+            storageBucket: "mjuchallengers-cdcf0.appspot.com",
+            messagingSenderId: "269368480951",
+            appId: "1:269368480951:web:ce63761f60f78cc7352932",
+            measurementId: "G-38SL4T0FRB"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+
+        //users table 정보 불러오기
+        db.collection('users').get().then((result) => {
+            result.forEach((doc) => {
+
+                var template = ` 
+            <tr id="infos">
+                <th scope="row" id="numberAdd" class="numberAdd"></th>
+                <td>${doc.data().이름}</td>
+                <td>${doc.data().전공}</td>
+                <th scope="col">${doc.data().챌린지성공률}</th>
+                
+            </tr> `;
+
+                $('.table').append(template)
+
+            })
+
+        });
+    </script>
+
+    <style>
+        .list-group {
+            padding: 20px;
+        }
+
+        .list-group li:hover {
+            background-color: black;
+            color: white;
+        }
+
+        .input-group {
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .table {
+            margin-top: 30px;
+            counter-reset: numbering;
+            list-style-type: none;
+        }
+
+        .table .numberAdd::before {
+            counter-increment: numbering;
+            content: counter(numbering);
+
+        }
+
+        @media (max-width: 768px) {
+
+            .input-group {
+                margin-top: 20px;
+            }
+
+
+        }
+
+
+    </style>
+
+</body>
+
+</html>

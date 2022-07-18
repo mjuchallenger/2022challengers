@@ -1,0 +1,11 @@
+.navbar-nav{
+    text-align: center;
+}
+
+.navbar-brand{
+    font-weight: bold;
+}
+
+.navbar-brand img{
+  border-radius: 5px;
+}

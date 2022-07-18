@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사진 추가하기</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous">
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <script src="https://kit.fontawesome.com/a4d2993e00.js" crossorigin="anonymous"></script>
+
+
+</head>
+
+
+
+<body>
+
+
+    <div class="addBox">
+
+
+        <div class="boxes">
+            <div class="picturebox">
+                <label for="pics"><i class="fas fa-camera"></i></label>
+                <input type="file" id="pics" multiple="multiple" onchange="readURL(this);">
+            </div>
+
+            <div class="videobox">
+                <label for="video"><i class="fas fa-video"></i></label>
+                <input type="file" id="video" accept="video/*" multiple="multiple">
+            </div>
+        </div>
+        <center><img id="preview"></center>
+
+        <center><textarea name="" id="feedback" cols="40" rows="5"></textarea></center>
+
+
+        <center><button type="submit" id="share">공유하기</button></center>
+
+    </div>
+
+    <script>
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('preview').src = e.target.result;
+                };
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                document.getElementById('preview').src = "";
+            }
+        }
+    </script>
+
+
+    <!-- update the version number as needed -->
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+    <script>
+        // Your web app's Firebase configuration
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxtq2PPSDXc49_PB-wyXcaLI6SZy6qrVA",
+            authDomain: "mjuchallengers-cdcf0.firebaseapp.com",
+            databaseURL: "https://mjuchallengers-cdcf0-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mjuchallengers-cdcf0",
+            storageBucket: "mjuchallengers-cdcf0.appspot.com",
+            messagingSenderId: "269368480951",
+            appId: "1:269368480951:web:ce63761f60f78cc7352932",
+            measurementId: "G-38SL4T0FRB"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+
+        const db = firebase.firestore();
+        const storage = firebase.storage();
+
+
+        $('#share').click(function () {
+
+            var file = document.querySelector('#pics').files[0];
+            var storageRef = storage.ref();
+            var 저장할경로 = storageRef.child('image/' + file.name);
+            var 업로드작업 = 저장할경로.put(file)
+
+            업로드작업.on('state_changed',
+                null,
+                (error) => {
+                    console.log('실패사유는', error);
+                },
+                () => {
+                    
+                    업로드작업.snapshot.ref.getDownloadURL().then((url) => {
+                        console.log('업로드된 경로는', url);
+
+                        var saveItem = {
+                            날짜: new Date(),
+                            소감문: $('#feedback').val(),
+                            이미지: url,
+                            uid: JSON.parse(localStorage.getItem('user')).uid,
+                            이름: JSON.parse(localStorage.getItem('user')).displayName
+            
+                        }
+                        db.collection('challenge').add(saveItem).then((result) => {
+                                console.log(result);
+                                alert('성공적으로 공유되었습니다.')
+                                location.href = "/public/frontEnd/components/home.html";
+                            })
+                            .catch((error) => {
+                                console.log(error);
+                                alert('error');
+
+                            })
+                    })
+
+                });
+        })
+
+        $('#video').click(function (){
+            alert ('영상이 제대로 업로드 안될 수 있습니다.');
+        })
+    </script>
+
+
+</body>
+
+<style>
+    .boxes {
+        display: flex;
+        justify-content: space-between;
+        margin-left: 10px;
+        margin-right: 10px;
+        margin-top: 10px;
+    }
+
+    label {
+        border: 1px solid black;
+        border-radius: 3px;
+        width: 150px;
+        height: 150px;
+        text-align: center;
+        align-items: center;
+        justify-content: center;
+    }
+
+
+    .picturebox i {
+        font-size: 40px;
+
+    }
+
+    .picturebox input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+    }
+
+    .videobox i {
+        font-size: 40px;
+    }
+
+    .videobox input {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+
+    }
+
+    #preview {
+        width: 350px;
+        height: 350px;
+        border: 1px solid black;
+        margin-top: 20px;
+
+    }
+
+    textarea {
+        width: 350px;
+        height: 130px;
+
+        margin-top: 20px;
+        border-radius: 5px;
+    }
+
+    button {
+        width: 200px;
+        height: 50px;
+
+        font-size: 15px;
+        font-weight: bold;
+
+        border-radius: 5px;
+        border: 1px solid #415dac;
+
+        background-color: white;
+
+        margin-top: 50px;
+        margin-bottom: 20px;
+
+    }
+</style>
+
+</html>

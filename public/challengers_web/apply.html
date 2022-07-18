@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>챌린저스 지원하기</title>
+  <link rel="stylesheet" href="css/apply.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+    integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+    integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+</head>
+
+<body>
+  <div class="container">
+
+    <div class="main-container" id="form">
+
+      <div class="title">
+        <div class="header">챌린저스 지원하기</div>
+      </div>
+
+      <div class="name">
+        <input type="email" id="email" name="email" placeholder="이메일" required
+          oninvalid="this.setCustomValidity('이메일을 입력해주세요')">
+      </div>
+      <div class="name">
+        <input type="password" id="password" name="password" placeholder="비밀번호" required
+          oninvalid="this.setCustomValidity('비밀번호를 입력해주세요')">
+      </div>
+      <div class="name">
+        <input type="text" id="username" name="username" placeholder="이름" required
+          oninvalid="this.setCustomValidity('이름을 입력해주세요.')">
+      </div>
+
+      <div class="student_num">
+        <input type="text" id="student_num" name="student_num" placeholder="학번" required
+          oninvalid="this.setCustomValidity('학번를 입력해주세요.')">
+      </div>
+      <div class="major">
+        <input type="text" id="major" name="major" placeholder="학과" required
+          oninvalid="this.setCustomValidity('학과를 입력해주세요.')">
+      </div>
+      <div class="phone">
+        <input type="telephone" id="phone" name="major" placeholder="전화번호" required
+          oninvalid="this.setCustomValidity('전화번호를 입력해주세요.')">
+      </div>
+
+      <div class="privacy">
+        <input type="checkbox" name="" id="privacy" required oninvalid="this.setCustomValidity('개인정보 동의를 해주세요')">
+        개인정보제공동의
+        <p>개인정보는 동아리 지원 안내메세지 및 단체메세지 초대에 활용됩니다.
+          동아리 탈퇴 이후 개인정보는 안전하게 폐기됩니다.
+          <br> 1. 챌린지 인증 앱 사용에 활용
+          <br> 2. 동아리 명단 작성에 활용
+          <br>(개인정보제공 거부시 동아리 지원이 어렵습니다. 개인정보는 동아리 Firebase 서버에 저장되며, 동아리 활동 이외에에는 전혀 사용되지 않습니다.)
+        </p>
+      </div>
+
+      <div class="send_btn">
+        <input type="submit" id="register" name="register_btn" value="가입하기"></input>
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- update the version number as needed -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-app.js"></script>
+  <!-- include only the Firebase features as you need -->
+
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-database.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.5/firebase-storage.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyAxtq2PPSDXc49_PB-wyXcaLI6SZy6qrVA",
+      authDomain: "mjuchallengers-cdcf0.firebaseapp.com",
+      databaseURL: "https://mjuchallengers-cdcf0-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "mjuchallengers-cdcf0",
+      storageBucket: "mjuchallengers-cdcf0.appspot.com",
+      messagingSenderId: "269368480951",
+      appId: "1:269368480951:web:ce63761f60f78cc7352932",
+      measurementId: "G-38SL4T0FRB"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+
+
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+
+    $('#register').click(function () {
+
+      // 회원가입 변수
+      var email = $('#email').val();
+      var password = $('#password').val();
+      var username = $('#username').val();
+
+      //firestore userInfo 저장
+      var userInfo = {
+        이메일: email,
+        이름: username,
+        학번: $('#student_num').val(),
+        전공: $('#major').val(),
+        전화번호: $('#phone').val(),
+        개인정보동의: '동의',
+        가입날짜: new Date()
+
+      }
+
+      firebase.auth().createUserWithEmailAndPassword(email, password).then((result) => {
+
+        db.collection('users').doc(result.user.uid).set(userInfo);
+
+        //display name 추가
+        result.user.updateProfile({displayName: username})
+        
+        console.log(result.user);
+        // window.location.href = '/public/challengers_web/main.html';
+        console.log('성공')
+
+      }).catch((error) => {
+        console.log('실패');
+      });
+
+    });
+
+
+  </script>
+
+
+</body>
+
+
+</html>
